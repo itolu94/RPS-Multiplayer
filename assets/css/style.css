@@ -24,7 +24,7 @@ input {
 }
 
 
-.playersView {
+.player1View, .player2View {
 	height: 300px;
 	width: 100%;
 	background-color: indianred;
@@ -46,4 +46,9 @@ input {
 
 .RPSDiv {
 	margin-bottom: 30px;
+}
+
+
+.RPSText:hover {
+	background-color: purple;
 }
