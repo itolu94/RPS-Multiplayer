@@ -1,54 +1,74 @@
-html{
-	min-height: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
+html {
+    min-height: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
-body{
-	min-height: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	background-color: deepskyblue;	
+body {
+    min-height: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background-image: url(https://s-media-cache-ak0.pinimg.com/originals/4b/53/74/4b53749bed889c4e20150c483999b88d.png);
+    background-size: cover;
 }
 
 input {
-/*	float: left;*/
-	margin-bottom: 30px;
+    /*	float: left;*/
+    margin-bottom: 30px;
 }
+
 .container {
-	height: 100%;
-	width: 100%;
-	padding-top: 30px;
+    height: 100%;
+    width: 100%;
+    padding-top: 30px;
+
 }
 
-
-.player1View, .player2View {
-	height: 300px;
-	width: 100%;
-	background-color: indianred;
-	
+.player1View,
+.player2View {
+    height: 300px;
+    width: 100%;
+    background-color: grey;
+    border: 3px solid white;
+    padding-top: 25%;
+    font-size: 30px;
 }
 
 .gamePlay {
-	background-color: lightpink;
-	height: 300px;
-	width: 100%;
+    border: 3px solid white;
+    background-image: url(https://i.ytimg.com/vi/7zqLqO38ZzQ/maxresdefault.jpg);
+    background-size: cover;
+    height: 300px;
+    width: 100%;
 }
 
 #chatBox {
-	background-color: white;
-	height: 150px;
-	overflow-y: scroll;
+    background-color: white;
+    height: 150px;
+    overflow-y: scroll;
+}
 
+#chatBox p {
+    margin: 0;
+    padding: 0;
+}
+
+#chatboxText {
+    padding: 0;
+    margin: 0;
+    width: 87%;
+}
+
+#chatboxSubmit {
+    width: 13%;
 }
 
 .RPSDiv {
-	margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
-
 .RPSText:hover {
-	background-color: purple;
+    background-color: purple;
 }
