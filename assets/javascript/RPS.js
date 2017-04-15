@@ -81,6 +81,7 @@ turnRef.on('value', function(snapshot) {
 // Establish witch ref is for each player
 $('#usersNameSubmitBtn').on('click', function() {
     usersName = $('#usersName').val().trim();
+    // if player 1 is still present, we set the new user to player 0
     if (playersList[0] === '1') {
         player = 0;
         playerRef = database.ref('/connections/0');
@@ -88,6 +89,8 @@ $('#usersNameSubmitBtn').on('click', function() {
         turnRef.set({
             turn: 1
         });
+        // if player is not present we set the player based on the amount of children
+        // in connections(where each player is nested in)
     } else {
         player = totalPlayers;
         if (player === 0) {
@@ -130,6 +133,7 @@ function gameplayText() {
 
 // Logic for player1's turn
 function RPSGameplay1() {
+    $('.gamePlay').empty();
     opponentRef.on('value', function(snap) {
         opponentsName = snap.val().name
     });
@@ -193,62 +197,63 @@ function RPSGameplay2() {
 // When turn is 3(Each player has made a move), isGameFinished Determines who won
 // each option pushes results to firebase
 function isGameFinished() {
+    var roundResult;
     opponentRef.on('value', function(snap) {
         opponentsChoice = snap.val().choice
     });
     if (choice === "Rock") {
         if (opponentsChoice === "Rock") {
+            roundResult = "ties"
             console.log("ties");
         } else if (opponentsChoice === "Paper") {
-            loses++
-            playerRef.update({
-                loses: loses
-            });
+            roundResult = "loses"
             console.log("loses");
         } else if (opponentsChoice === "Scissors") {
-            wins++
-            playerRef.update({
-                wins: wins
-            });
+            roundResult = "wins";
             console.log("wins");
         }
     }
     if (choice === "Paper") {
         if (opponentsChoice === "Paper") {
+            roundResult = "ties"
             console.log("ties");
         } else if (opponentsChoice === "Scissors") {
-            loses++
-            playerRef.update({
-                loses: loses
-            });
+            roundResult = "loses"
             console.log("loses");
         } else if (opponentsChoice === "Rock") {
-            wins++
-            playerRef.update({
-                wins: wins
-            });
+            roundResult = "wins"
             console.log("wins");
         }
     }
 
     if (choice === "Scissors") {
         if (opponentsChoice === "Scissors") {
+            roundResult = "ties"
             console.log("ties");
         } else if (opponentsChoice === "Rock") {
+            roundResult = "loses"
+            console.log("loses");
+        } else if (opponentsChoice === "Paper") {
+            roundResult = "wins"
+            console.log("wins");
+        }
+    }
+
+    switch (roundResult) {
+        case "wins":
+            wins++;
+            playerRef.update({
+                wins: wins
+            });
+            $('.gamePlay').html('<p class="roundResultText text-center">' + usersName + ", you won!" + '<p>');
+        case "loses":
             loses++
             playerRef.update({
                 loses: loses
             });
-            console.log("loses");
-        } else if (opponentsChoice === "Paper") {
-            wins++
-            playerRef.update({
-                wins: wins
-            });
-            console.log("wins");
-        }
+            $('.gamePlay').html('<p class="roundResultText text-center">' + opponentsName + " won!" + '<p>');
     }
-    setTimeout(RPSGameplay1, 2000);
+    setTimeout(RPSGameplay1, 1000);
 }
 
 

@@ -44,6 +44,11 @@ input {
     width: 100%;
 }
 
+.roundResultText {
+	font-size: 30px;
+	color: white;
+}
+
 #chatBox {
     background-color: white;
     height: 150px;
