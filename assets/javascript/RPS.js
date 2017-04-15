@@ -15,7 +15,6 @@ var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
 var turnRef = database.ref('/turn');
 var chatBoxRef = database.ref('/chat');
-// playerRef was previously = ('/connections/') Just in case of future error
 var usersName;
 var playerRef, opponentRef;
 var RPSMoves = ["Rock", "Paper", "Scissors"];
@@ -25,8 +24,8 @@ var loses = 0;
 var alreadyPlaying = false;
 var gameStarted = false;
 var opponentName, opponentsChoice
-var totalPlayers;
-var player;
+var player, totalPlayers;
+var playersList = [""]
 
 
 // displays text between players in chatbox div
@@ -37,34 +36,31 @@ chatBoxRef.on('child_changed', function(snapshot) {
     $('#chatBox').append(paragraph);
 });
 
-
+// displays text when opponent disconnects
 connectionsRef.on("child_removed", function(snap) {
-console.log('Somebody left');
+    disconnectText = opponentsName + ': Disconnected.'
+    chatBoxRef.set({
+        chat: disconnectText
+    })
+    console.log('Somebody left');
 });
 
+// key to making the perfect game
+// console.log(Object.keys(snap.val()));
 
-
-
+// keeps trackof how many player are playing
 connectionsRef.on("value", function(snap) {
     console.log(snap.val());
-
     totalPlayers = snap.numChildren();
+    playersList = Object.keys(snap.val());
     gameplayText();
     if (snap.val()) {
+        // user is removed when they disconnect
         playerRef.onDisconnect().remove();
     }
-    if (totalPlayers > 1) {
-        $('#usersNameSubmitBtn').attr('disabled', true);
-        RPSGameplay1();
-    }
-    // if a player leaves a user is not alreayd playing, they will get to join the game.   
-    else if (alreadyPlaying === false && totalPlayers < 3) {
-        $('#usersNameSubmitBtn').attr('disabled', false);
-    }
-
-
 });
 
+// keeps track of turns
 turnRef.on('value', function(snapshot) {
     console.log(snapshot.val().turn);
     turn = snapshot.val().turn;
@@ -85,22 +81,31 @@ turnRef.on('value', function(snapshot) {
 // Establish witch ref is for each player
 $('#usersNameSubmitBtn').on('click', function() {
     usersName = $('#usersName').val().trim();
-    player = totalPlayers;
-    if (player === 0) {
+    if (playersList[0] === '1') {
+        player = 0;
         playerRef = database.ref('/connections/0');
         opponentRef = database.ref('/connections/1')
-    } else if (player === 1) {
-        playerRef = database.ref('/connections/1');
-        opponentRef = database.ref('/connections/0');
-        // This update triggers .on('value') for turn to run RPSGameplay1();
-        turnRef.update({
+        turnRef.set({
             turn: 1
         });
+    } else {
+        player = totalPlayers;
+        if (player === 0) {
+            playerRef = database.ref('/connections/0');
+            opponentRef = database.ref('/connections/1')
+        } else if (player === 1) {
+            playerRef = database.ref('/connections/1');
+            opponentRef = database.ref('/connections/0');
+            // This update triggers .on('value') for turn to run RPSGameplay1();
+            turnRef.set({
+                turn: 1
+            });
+        }
     }
     alreadyPlaying = true;
     playerInfo = {};
-    playerInfo[totalPlayers] = { name: usersName, wins: 0, loses: 0, choice: " " };
-    connectionsRef.update(playerInfo);
+    playerInfo;
+    connectionsRef.child(player).update({ name: usersName, wins: 0, loses: 0, choice: " " });
     $('#usersNameSubmitBtn').attr('disabled', true);
 
 });
@@ -174,7 +179,7 @@ function RPSGameplay2() {
     } else if (player === 0) {
         $('.player1View').empty();
         var paragraph2 = $('<p>');
-        paragraph2.html(usersName + ", you chose" + choice);
+        paragraph2.html(usersName + ", you chose " + choice);
         $('.player1View').append(paragraph2);
 
         $('.player2View').empty();
@@ -243,11 +248,12 @@ function isGameFinished() {
             console.log("wins");
         }
     }
+    setTimeout(RPSGameplay1, 2000);
 }
 
 
 // Try to make .player1View and .player2View into one function. 
-$('.player1View').on('click', 'p.RPSText',function() {
+$('.player1View').on('click', 'p.RPSText', function() {
     choice = $(this).attr('data');
     console.log(choice);
     playerRef.update({
@@ -260,7 +266,7 @@ $('.player1View').on('click', 'p.RPSText',function() {
 });
 
 
-$('.player2View ').on('click', "p.RPSText",function() {
+$('.player2View ').on('click', "p.RPSText", function() {
     choice = $(this).attr('data');
     turnRef.update({
         turn: 3
@@ -280,8 +286,6 @@ $('#chatboxSubmit').on('click', function() {
     } else {
         var paragraph = $('<p>');
         var text = usersName + ": " + $('#chatboxText').val().trim();
-        // paragraph.html(text);
-        // $('#chatBox').append(paragraph);
         chatBoxRef.set({
             chat: text
         })
