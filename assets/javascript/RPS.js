@@ -95,7 +95,10 @@ $('#usersNameSubmitBtn').on('click', function() {
         player = totalPlayers;
         if (player === 0) {
             playerRef = database.ref('/connections/0');
-            opponentRef = database.ref('/connections/1')
+            opponentRef = database.ref('/connections/1');
+            turnRef.set({
+                turn: 5
+            });
         } else if (player === 1) {
             playerRef = database.ref('/connections/1');
             opponentRef = database.ref('/connections/0');
@@ -122,6 +125,7 @@ function gameplayText() {
         var gameText = $('<h3>');
         gameText.html("Let the games begin");
         $('#registrationDiv').append(gameText);
+        // RPSGameplay1();
 
     } else if (totalPlayers >= 1 && alreadyPlaying === true) {
         $('#registrationDiv').empty();
@@ -239,19 +243,18 @@ function isGameFinished() {
         }
     }
 
-    switch (roundResult) {
-        case "wins":
-            wins++;
-            playerRef.update({
-                wins: wins
-            });
-            $('.gamePlay').html('<p class="roundResultText text-center">' + usersName + ", you won!" + '<p>');
-        case "loses":
-            loses++
-            playerRef.update({
-                loses: loses
-            });
-            $('.gamePlay').html('<p class="roundResultText text-center">' + opponentsName + " won!" + '<p>');
+    if (roundResult === "wins") {
+        wins++;
+        playerRef.update({
+            wins: wins
+        });
+        $('.gamePlay').html('<p class="roundResultText text-center">' + usersName + ", you won!" + '<p>');
+    } else if (roundResult === "loses") {
+        loses++
+        playerRef.update({
+            loses: loses
+        });
+        $('.gamePlay').html('<p class="roundResultText text-center">' + opponentsName + " won!" + '<p>');
     }
     setTimeout(RPSGameplay1, 1000);
 }
